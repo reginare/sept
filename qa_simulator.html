@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QA Simulator</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        #game-container {
+            width: 800px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+        }
+        .task {
+            border: 1px solid #eee;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .task:hover {
+            background-color: #f9f9f9;
+        }
+        #task-details {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3e8e41;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1>QA Simulator</h1>
+
+    <div id="project-selection">
+        <h2>Выберите проект:</h2>
+        <button onclick="startGame('Project Alpha')">Project Alpha</button>
+        <button onclick="startGame('Project Beta')">Project Beta</button>
+    </div>
+
+    <div id="team-selection" style="display: none;">
+        <h2>Выберите команду:</h2>
+        <button onclick="selectTeam('Team A')">Team A</button>
+        <button onclick="selectTeam('Team B')">Team B</button>
+    </div>
+
+
+    <div id="game-area" style="display: none;">
+        <h2>Задачи тестирования:</h2>
+        <div id="tasks"></div>
+
+        <div id="task-details">
+            <h3>Описание задачи:</h3>
+            <p id="task-description"></p>
+            <button onclick="writeTestCase()">Написать тест-кейс</button>
+            <button onclick="automateTest()">Автоматизировать тест</button>
+            <button onclick="runTest()">Запустить тест</button>
+            <button onclick="analyzeResults()">Анализировать результаты</button>
+            <button onclick="reportBug()">Репорт бага</button>
+
+        </div>
+
+        <div id="stats">
+            <p>Время: <span id="time">60</span></p>
+            <p>Качество: <span id="quality">50</span></p>
+        </div>
+
+    </div>
+
+    <div id="game-over" style="display: none;">
+        <h2>Игра окончена!</h2>
+        <p id="final-score"></p>
+        <button onclick="location.reload()">Начать заново</button>
+    </div>
+
+</div>
+
+<script>
+    let project = null;
+    let team = null;
+    let tasks = [];
+    let currentTask = null;
+    let time = 60;
+    let quality = 50;
+    let timerInterval;
+
+    function startGame(selectedProject) {
+        project = selectedProject;
+        document.getElementById('project-selection').style.display = 'none';
+        document.getElementById('team-selection').style.display = 'block';
+        // Инициализация задач для проекта (пример)
+        tasks = [
+            { id: 1, name: "Проверить форму регистрации", description: "Убедитесь, что форма регистрации работает корректно." },
+            { id: 2, name: "Протестировать процесс авторизации", description: "Проверьте, что пользователи могут успешно авторизоваться." },
+            { id: 3, name: "Проверить страницу профиля", description: "Убедитесь, что страница профиля отображает корректную информацию." }
+        ];
+
+
+    }
+
+    function selectTeam(selectedTeam) {
+         team = selectedTeam;
+        document.getElementById('team-selection').style.display = 'none';
+        document.getElementById('game-area').style.display = 'block';
+
+         // Отображение задач
+        displayTasks();
+
+        // Запуск таймера
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function displayTasks() {
+        const tasksDiv = document.getElementById('tasks');
+        tasksDiv.innerHTML = '';
+        tasks.forEach(task => {
+            const taskDiv = document.createElement('div');
+            taskDiv.classList.add('task');
+            taskDiv.textContent = task.name;
+            taskDiv.onclick = () => showTaskDetails(task);
+            tasksDiv.appendChild(taskDiv);
+        });
+    }
+
+    function showTaskDetails(task) {
+        currentTask = task;
+        document.getElementById('task-description').textContent = task.description;
+    }
+
+    function writeTestCase() {
+        // Логика написания тест-кейса (пример)
+        if (currentTask) {
+            alert("Написан тест-кейс для задачи: " + currentTask.name);
+            quality += 5;
+            updateQuality();
+        }
+    }
+
+    function automateTest() {
+        // Логика автоматизации теста (пример)
+        if (currentTask) {
+            alert("Тест автоматизирован для задачи: " + currentTask.name);
+            quality += 10;
+            updateQuality();
+            time -= 5;
+            updateTime();
+        }
+    }
+
+    function runTest() {
+        // Логика запуска теста (пример)
+        if (currentTask) {
+            alert("Тест запущен для задачи: " + currentTask.name);
+            time -= 2;
+            updateTime();
+            // Имитация нахождения бага
+            if (Math.random() < 0.3) { // 30% шанс найти баг
+                reportBug();
+            }
+        }
+    }
+
+    function analyzeResults() {
+        // Логика анализа результатов (пример)
+        if (currentTask) {
+            alert("Результаты проанализированы для задачи: " + currentTask.name);
+            time -= 3;
+            updateTime();
+        }
+    }
+
+    function reportBug() {
+        // Логика репорта бага (пример)
+        if (currentTask) {
+            alert("Обнаружен и зарепорчен баг для задачи: " + currentTask.name);
+            quality += 2;
+            updateQuality();
+            time -= 4;
+            updateTime();
+        }
+    }
+
+
+    function updateTimer() {
+        time--;
+        updateTime();
+
+        if (time <= 0) {
+            endGame();
+        }
+    }
+
+    function updateTime() {
+        document.getElementById('time').textContent = time;
+    }
+
+    function updateQuality() {
+        document.getElementById('quality').textContent = quality;
+    }
+
+
+    function endGame() {
+        clearInterval(timerInterval);
+        document.getElementById('game-area').style.display = 'none';
+        document.getElementById('game-over').style.display = 'block';
+
+        let finalScoreMessage = "Финальный счет: Качество - " + quality + ". ";
+        if (quality > 70) {
+            finalScoreMessage += "Релиз успешен!";
+        } else {
+            finalScoreMessage += "Релиз провален...";
+        }
+
+        document.getElementById('final-score').textContent = finalScoreMessage;
+    }
+</script>
+
+</body>
+</html>
