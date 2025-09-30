@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Тестировщик-Тамагочи</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+        }
+        #game-container {
+            width: 400px;
+            margin: 0 auto;
+            border: 2px solid #ccc;
+            padding: 20px;
+            background-color: #f8f8f8;
+        }
+        #tester {
+            width: 100px;
+            height: 100px;
+            background-image: url('tester_idle.png'); /* Замените на свою картинку */
+            background-size: cover;
+            margin: 10px auto;
+        }
+        #pet {
+            width: 50px;
+            height: 50px;
+            background-image: url('pet_idle.png'); /* Замените на свою картинку */
+            background-size: cover;
+            margin: 10px auto;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #3e8e41;
+        }
+        .status {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1>Тестировщик-Тамагочи</h1>
+
+    <div id="tester"></div>
+    <div id="pet"></div>
+
+    <div id="status">
+        <p class="status">Энергия: <span id="energy">100</span></p>
+        <p class="status">Сытость: <span id="hunger">100</span></p>
+        <p class="status">Счастье: <span id="happiness">100</span></p>
+        <p class="status">Опыт: <span id="experience">0</span></p>
+    </div>
+
+    <div id="actions">
+        <button onclick="sleep()">Спать 😴</button>
+        <button onclick="watchSeries()">Смотреть сериал 📺</button>
+        <button onclick="eat()">Кушать 🍔</button>
+        <button onclick="cook()">Готовить еду 🍳</button>
+        <button onclick="code()">Кодить 💻</button>
+        <button onclick="petPet()">Погладить питомца 🐾</button>
+    </div>
+</div>
+
+<script>
+    let energy = 100;
+    let hunger = 100;
+    let happiness = 100;
+    let experience = 0;
+
+    function updateStats() {
+        document.getElementById('energy').textContent = energy;
+        document.getElementById('hunger').textContent = hunger;
+        document.getElementById('happiness').textContent = happiness;
+        document.getElementById('experience').textContent = experience;
+    }
+
+    function sleep() {
+        if (energy < 100) {
+            energy = 100;
+            hunger -= 10;
+            happiness += 5;
+            experience += 2;
+            updateStats();
+            displayMessage("Тестировщик сладко спит, набираясь сил!");
+        } else {
+            displayMessage("Тестировщик полон энергии!");
+        }
+    }
+
+    function watchSeries() {
+        energy -= 20;
+        hunger -= 5;
+        happiness += 15;
+        experience += 1;
+        updateStats();
+        displayMessage("Тестировщик смотрит увлекательный сериал!");
+    }
+
+    function eat() {
+        if (hunger < 100) {
+            energy += 5;
+            hunger = 100;
+            happiness += 10;
+            experience += 3;
+            updateStats();
+            displayMessage("Тестировщик насытился и готов к работе!");
+        } else {
+            displayMessage("Тестировщик не голоден!");
+        }
+    }
+
+    function cook() {
+        energy -= 15;
+        hunger += 20; // Немного сытости даже если готовит
+        happiness += 10;
+        experience += 5;
+        updateStats();
+        displayMessage("Тестировщик приготовил что-то вкусненькое!");
+    }
+
+    function code() {
+        energy -= 30;
+        hunger -= 10;
+        happiness -= 10;
+        experience += 20;
+        updateStats();
+        displayMessage("Тестировщик увлеченно пишет автоматизированные тесты!");
+    }
+
+     function petPet() {
+        energy -= 2;
+        hunger -= 1;
+        happiness += 20;
+        experience += 1;
+        updateStats();
+        displayMessage("Тестировщик погладил питомца. Хорошо!");
+    }
+
+
+    function displayMessage(message) {
+        alert(message); // Можно заменить на более красивое отображение сообщений
+    }
+
+    // Ухудшение показателей со временем (таймер)
+    setInterval(() => {
+        energy = Math.max(0, energy - 1);
+        hunger = Math.max(0, hunger - 1);
+        happiness = Math.max(0, happiness - 0.5); // Медленнее падает
+        updateStats();
+
+        if (energy <= 0 || hunger <= 0 || happiness <= 0) {
+            gameOver();
+        }
+    }, 3000); // Каждые 3 секунды
+
+    function gameOver() {
+        alert("Тестировщик устал и загрустил! Игра окончена.");
+        // Можно перезагрузить страницу или показать экран проигрыша
+        location.reload();
+    }
+
+
+    updateStats(); // Инициализация статистики
+</script>
+
+</body>
+</html>
