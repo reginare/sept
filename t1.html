@@ -1,32 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Тестировщик-Тамагочи</title>
+    <title>Тестировщик-Тамагочи: Комнаты</title>
     <style>
         body {
             font-family: sans-serif;
             text-align: center;
         }
+
         #game-container {
-            width: 400px;
+            width: 600px;
             margin: 0 auto;
             border: 2px solid #ccc;
             padding: 20px;
             background-color: #f8f8f8;
         }
-        #tester {
-            width: 100px;
-            height: 100px;
-            background-image: url('tester_idle.png'); /* Замените на свою картинку */
-            background-size: cover;
+
+        #game-area {
+            position: relative;
+            width: 400px;
+            height: 300px;
             margin: 10px auto;
+            border: 1px solid #ddd;
         }
-        #pet {
-            width: 50px;
-            height: 50px;
-            background-image: url('pet_idle.png'); /* Замените на свою картинку */
-            background-size: cover;
-            margin: 10px auto;
+
+        #tester {
+            position: absolute;
+            font-size: 2em;
+            top: 0;
+            left: 0;
+            transition: all 0.5s ease-in-out; /* Плавный переход */
+        }
+
+        .room {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8); /* Прозрачный фон */
+            display: none; /* Скрыты по умолчанию */
+        }
+
+        #room-bedroom { background-color: rgba(240, 248, 255, 0.8); } /* AliceBlue */
+        #room-livingroom { background-color: rgba(245, 245, 220, 0.8); } /* Beige */
+        #room-kitchen { background-color: rgba(255, 228, 196, 0.8); } /* Bisque */
+        #room-office { background-color: rgba(224, 255, 255, 0.8); } /* LightCyan */
+
+        .status {
+            margin: 5px;
         }
 
         button {
@@ -38,21 +58,24 @@
             cursor: pointer;
             border-radius: 5px;
         }
+
         button:hover {
             background-color: #3e8e41;
-        }
-        .status {
-            margin: 5px;
         }
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <h1>Тестировщик-Тамагочи</h1>
+    <h1>Тестировщик-Тамагочи: Комнаты</h1>
 
-    <div id="tester"></div>
-    <div id="pet"></div>
+    <div id="game-area">
+        <div id="room-bedroom" class="room">Комната отдыха</div>
+        <div id="room-livingroom" class="room">Гостиная</div>
+        <div id="room-kitchen" class="room">Кухня</div>
+        <div id="room-office" class="room">Офис</div>
+        <div id="tester">🧑‍💻</div> <!-- Емодзи тестировщика -->
+    </div>
 
     <div id="status">
         <p class="status">Энергия: <span id="energy">100</span></p>
@@ -62,12 +85,12 @@
     </div>
 
     <div id="actions">
-        <button onclick="sleep()">Спать 😴</button>
-        <button onclick="watchSeries()">Смотреть сериал 📺</button>
-        <button onclick="eat()">Кушать 🍔</button>
-        <button onclick="cook()">Готовить еду 🍳</button>
-        <button onclick="code()">Кодить 💻</button>
-        <button onclick="petPet()">Погладить питомца 🐾</button>
+                <button onclick="sleep()">Спать 😴 (Комната отдыха)</button>
+        <button onclick="watchSeries()">Смотреть сериал 📺 (Гостиная)</button>
+        <button onclick="eat()">Кушать 🍔 (Кухня)</button>
+        <button onclick="cook()">Готовить еду 🍳 (Кухня)</button>
+        <button onclick="code()">Кодить 💻 (Офис)</button>
+        <button onclick="petPet()">Погладить питомца 🐾 (Гостиная)</button>
     </div>
 </div>
 
@@ -77,6 +100,9 @@
     let happiness = 100;
     let experience = 0;
 
+    let currentRoom = 'room-office'; // Начинаем в офисе
+    let testerElement = document.getElementById('tester');
+
     function updateStats() {
         document.getElementById('energy').textContent = energy;
         document.getElementById('hunger').textContent = hunger;
@@ -84,8 +110,32 @@
         document.getElementById('experience').textContent = experience;
     }
 
+    function moveToRoom(roomId) {
+        // Скрыть все комнаты
+        let rooms = document.querySelectorAll('.room');
+        rooms.forEach(room => room.style.display = 'none');
+
+        // Показать целевую комнату
+        document.getElementById(roomId).style.display = 'block';
+
+        // Позиционирование тестировщика (немного рандомно, чтобы не перекрывать текст)
+        let roomElement = document.getElementById(roomId);
+        let roomWidth = roomElement.offsetWidth;
+        let roomHeight = roomElement.offsetHeight;
+
+        let randomX = Math.floor(Math.random() * (roomWidth - 30)); // -30 чтобы не вылезал за границы
+        let randomY = Math.floor(Math.random() * (roomHeight - 30));
+
+        testerElement.style.left = randomX + 'px';
+        testerElement.style.top = randomY + 'px';
+
+        currentRoom = roomId; // Обновить текущую комнату
+    }
+
+
     function sleep() {
         if (energy < 100) {
+            moveToRoom('room-bedroom');
             energy = 100;
             hunger -= 10;
             happiness += 5;
@@ -98,6 +148,7 @@
     }
 
     function watchSeries() {
+        moveToRoom('room-livingroom');
         energy -= 20;
         hunger -= 5;
         happiness += 15;
@@ -107,6 +158,7 @@
     }
 
     function eat() {
+        moveToRoom('room-kitchen');
         if (hunger < 100) {
             energy += 5;
             hunger = 100;
@@ -120,6 +172,7 @@
     }
 
     function cook() {
+        moveToRoom('room-kitchen');
         energy -= 15;
         hunger += 20; // Немного сытости даже если готовит
         happiness += 10;
@@ -129,6 +182,7 @@
     }
 
     function code() {
+        moveToRoom('room-office');
         energy -= 30;
         hunger -= 10;
         happiness -= 10;
@@ -137,7 +191,8 @@
         displayMessage("Тестировщик увлеченно пишет автоматизированные тесты!");
     }
 
-     function petPet() {
+    function petPet() {
+        moveToRoom('room-livingroom');
         energy -= 2;
         hunger -= 1;
         happiness += 20;
@@ -170,6 +225,7 @@
     }
 
 
+    moveToRoom(currentRoom); // Инициализируем начальную комнату
     updateStats(); // Инициализация статистики
 </script>
 
