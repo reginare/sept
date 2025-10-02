@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Кото-Тамагочи</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        #game-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            width: 800px;
+            text-align: center;
+        }
+
+        #room {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            background-color: #e0e0e0;
+            margin: 20px auto;
+            border-radius: 5px;
+        }
+
+        .sector {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            /*border: 1px dashed rgba(0, 0, 0, 0.2);*/ /* Для отладки */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px; /*Чтобы было видно текст*/
+        }
+
+        #sector-bed {
+            top: 20px;
+            left: 20px;
+        }
+
+        #sector-food {
+            top: 20px;
+            right: 20px;
+        }
+
+        #sector-work {
+            bottom: 20px;
+            left: 20px;
+        }
+
+        #sector-play {
+            bottom: 20px;
+            right: 20px;
+        }
+
+        #cat {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px; /*Чтобы кота было видно*/
+        }
+
+        #status-bar {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .status-item {
+            font-size: 16px;
+        }
+
+        #actions button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+
+        #actions button:hover {
+            background-color: #3e8e41;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="room">
+            <div id="sector-bed" class="sector">🛌</div>
+            <div id="sector-food" class="sector">🍖</div>
+            <div id="sector-work" class="sector">💻</div>
+            <div id="sector-play" class="sector">⚽</div>
+
+            <div id="cat">🐱</div>
+        </div>
+
+        <div id="status-bar">
+            <div class="status-item">
+                Счастье: <span id="happiness">100</span>
+            </div>
+            <div class="status-item">
+                Сытость: <span id="hunger">100</span>
+            </div>
+            <div class="status-item">
+                Энергия: <span id="energy">100</span>
+            </div>
+            <div class="status-item">
+                Работа: <span id="work">0</span>
+            </div>
+             <div class="status-item">
+                Очки: <span id="score">0</span>
+            </div>
+
+        </div>
+
+        <div id="actions">
+            <button onclick="feedCat()">Покормить</button>
+            <button onclick="putCatToBed()">Уложить спать</button>
+            <button onclick="makeCatWork()">Работать</button>
+            <button onclick="playWithCat()">Играть</button>
+        </div>
+    </div>
+
+    <script>
+        // Состояние котика
+        let happiness = 100;
+        let hunger = 100;
+        let energy = 100;
+        let work = 0;
+        let score = 0;
+
+        // Элементы DOM
+        const happinessElement = document.getElementById('happiness');
+        const hungerElement = document.getElementById('hunger');
+        const energyElement = document.getElementById('energy');
+        const workElement = document.getElementById('work');
+        const scoreElement = document.getElementById('score');
+        const catElement = document.getElementById('cat');
+
+        // Функция обновления интерфейса
+        function updateUI() {
+            happinessElement.textContent = happiness;
+            hungerElement.textContent = hunger;
+            energyElement.textContent = energy;
+            workElement.textContent = work;
+            scoreElement.textContent = score;
+
+            // Обновление котика в зависимости от состояния
+            if (energy < 30) {
+                catElement.textContent = '😴';
+            } else if (hunger < 30) {
+                catElement.textContent = '😿';
+            } else if (happiness < 30) {
+                catElement.textContent = '🙁';
+            }
+            else if (work > 80) {
+                catElement.textContent = '👨‍💻';
+            }
+            else {
+                catElement.textContent = '🐱';
+            }
+        }
+
+        // Функции действий
+        function feedCat() {
+            if (hunger < 100) {
+                hunger = Math.min(100, hunger + 30);
+                happiness = Math.min(100, happiness + 10);
+                updateUI();
+            } else {
+                alert("Котик не голоден!");
+            }
+        }
+
+        function putCatToBed() {
+            if (energy < 100) {
+                energy = Math.min(100, energy + 50);
+                hunger = Math.max(0, hunger - 10);
+                updateUI();
+            } else {
+                alert("Котик не хочет спать!");
+            }
+        }
+
+        function makeCatWork() {
+            if (energy > 20) {
+                energy = Math.max(0, energy - 20);
+                hunger = Math.max(0, hunger - 5);
+                work = Math.min(100, work + 15);
+                score += 10;
+                updateUI();
+            } else {
+                alert("Котик слишком устал для работы!");
+            }
+        }
+
+        function playWithCat() {
+            if (energy > 10 && happiness < 100) {
+                energy = Math.max(0, energy - 10);
+                happiness = Math.min(100, happiness + 20);
+                hunger = Math.max(0, hunger - 5);
+                updateUI();
+            } else {
+                alert("Котик не хочет играть!");
+            }
+        }
+
+        // Основной цикл игры
+        setInterval(() => {
+            happiness = Math.max(0, happiness - 1);
+            hunger = Math.max(0, hunger - 2);
+            energy = Math.max(0, energy - 1);
+
+            if(work > 0) {
+                work = Math.max(0, work - 0.5);
+            }
+
+            score += 1;
+
+            updateUI();
+
+            // Проверка на смерть котика
+            if (happiness === 0 || hunger === 0 || energy === 0) {
+                alert("Котик умер :(");
+                //  Перезагрузка страницы для начала новой игры
+                location.reload();
+            }
+        }, 1000);
+
+        // Первоначальное отображение
+        updateUI();
+    </script>
+</body>
+</html>
