@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Кото-Тамагочи</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="room">
+            <div id="sector-bed" class="sector">
+                <img id="bed-image" src="images/bed.png" alt="Кровать">
+            </div>
+            <div id="sector-food" class="sector">
+                <img id="food-bowl-image" src="images/food-bowl.png" alt="Миска с едой">
+            </div>
+            <div id="sector-work" class="sector">
+                <img id="computer-image" src="images/computer.png" alt="Компьютер">
+            </div>
+            <div id="sector-play" class="sector">
+                <img id="toy-image" src="images/toy.png" alt="Игрушка">
+            </div>
+
+            <div id="cat">
+                <img id="cat-image" src="images/cat-idle.gif" alt="Котик">
+                <div id="cat-name">Мурзик</div>
+            </div>
+        </div>
+
+        <div id="status-bar">
+            <div class="status-item">
+                Счастье: <span id="happiness">100</span>
+            </div>
+            <div class="status-item">
+                Сытость: <span id="hunger">100</span>
+            </div>
+            <div class="status-item">
+                Энергия: <span id="energy">100</span>
+            </div>
+            <div class="status-item">
+                Работа: <span id="work">0</span>
+            </div>
+             <div class="status-item">
+                Очки: <span id="score">0</span>
+            </div>
+
+        </div>
+
+        <div id="actions">
+            <button onclick="feedCat()">Покормить</button>
+            <button onclick="putCatToBed()">Уложить спать</button>
+            <button onclick="makeCatWork()">Работать</button>
+            <button onclick="playWithCat()">Играть</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>index.html
