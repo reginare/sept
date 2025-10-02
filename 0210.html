@@ -1,0 +1,255 @@
+Вот **HTML, CSS и JavaScript** код для игры «Котик-Тамагочи» с базовой функциональностью:  
+
+```html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Котик-Тамагочи</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #game-container {
+            width: 800px;
+            height: 600px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        #apartment {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        .room {
+            position: absolute;
+            border: 2px dashed #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        #kitchen {
+            top: 50px;
+            left: 50px;
+            width: 200px;
+            height: 200px;
+            background-color: #ffd6a5;
+        }
+        #bedroom {
+            top: 50px;
+            left: 300px;
+            width: 200px;
+            height: 200px;
+            background-color: #a5ffd6;
+        }
+        #work-area {
+            top: 50px;
+            left: 550px;
+            width: 200px;
+            height: 200px;
+            background-color: #d6a5ff;
+        }
+        #play-area {
+            top: 300px;
+            left: 300px;
+            width: 200px;
+            height: 200px;
+            background-color: #a5d6ff;
+        }
+        #cat {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background-color: orange;
+            border-radius: 50%;
+            top: 270px;
+            left: 370px;
+            transition: all 0.3s ease;
+        }
+        #stats {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .stat-bar {
+            height: 10px;
+            margin: 5px 0;
+            background-color: #eee;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .stat-fill {
+            height: 100%;
+            border-radius: 5px;
+        }
+        #hunger-fill { background-color: #ff6b6b; }
+        #energy-fill { background-color: #4ecdc4; }
+        #mood-fill { background-color: #ffd166; }
+        #buttons {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #feed-btn { background-color: #ff9f1c; }
+        #sleep-btn { background-color: #2ec4b6; }
+        #work-btn { background-color: #e71d36; color: white; }
+        #play-btn { background-color: #540d6e; color: white; }
+        #points {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="apartment">
+            <div id="kitchen" class="room">Кухня</div>
+            <div id="bedroom" class="room">Спальня</div>
+            <div id="work-area" class="room">Рабочий уголок</div>
+            <div id="play-area" class="room">Игровая зона</div>
+            <div id="cat"></div>
+        </div>
+        <div id="stats">
+            <div>Голод: <span id="hunger-value">100</span>%</div>
+            <div class="stat-bar"><div id="hunger-fill" class="stat-fill" style="width: 100%"></div></div>
+            <div>Энергия: <span id="energy-value">100</span>%</div>
+            <div class="stat-bar"><div id="energy-fill" class="stat-fill" style="width: 100%"></div></div>
+            <div>Настроение: <span id="mood-value">100</span>%</div>
+            <div class="stat-bar"><div id="mood-fill" class="stat-fill" style="width: 100%"></div></div>
+            <div id="points">Очки: <span id="points-value">0</span></div>
+            <div id="status">Состояние: Бодрствует</div>
+        </div>
+        <div id="buttons">
+            <button id="feed-btn">Покормить</button>
+            <button id="sleep-btn">Уложить спать</button>
+            <button id="work-btn">Заставить работать</button>
+            <button id="play-btn">Поиграть</button>
+        </div>
+    </div>
+
+    <script>
+        // Состояние котика
+        const cat = {
+            hunger: 100,
+            energy: 100,
+            mood: 100,
+            isSleeping: false,
+            points: 0,
+            position: { x: 370, y: 270 }
+        };
+
+        // Элементы DOM
+        const catElement = document.getElementById('cat');
+        const hungerValue = document.getElementById('hunger-value');
+        const energyValue = document.getElementById('energy-value');
+        const moodValue = document.getElementById('mood-value');
+        const pointsValue = document.getElementById('points-value');
+        const statusElement = document.getElementById('status');
+        const hungerFill = document.getElementById('hunger-fill');
+        const energyFill = document.getElementById('energy-fill');
+        const moodFill = document.getElementById('mood-fill');
+
+        // Кнопки действий
+        document.getElementById('feed-btn').addEventListener('click', () => {
+            if (!cat.isSleeping) {
+                cat.hunger = Math.min(100, cat.hunger + 20);
+                cat.mood = Math.min(100, cat.mood + 5);
+                updateStats();
+            }
+        });
+
+        document.getElementById('sleep-btn').addEventListener('click', () => {
+            cat.isSleeping = !cat.isSleeping;
+            statusElement.textContent = `Состояние: ${cat.isSleeping ? 'Спит' : 'Бодрствует'}`;
+        });
+
+        document.getElementById('work-btn').addEventListener('click', () => {
+            if (!cat.isSleeping && cat.energy > 20) {
+                cat.energy -= 15;
+                cat.points += 10;
+                cat.mood = Math.max(0, cat.mood - 5);
+                updateStats();
+            }
+        });
+
+        document.getElementById('play-btn').addEventListener('click', () => {
+            if (!cat.isSleeping && cat.energy > 10) {
+                cat.energy -= 10;
+                cat.mood = Math.min(100, cat.mood + 15);
+                cat.points += 5;
+                updateStats();
+            }
+        });
+
+        // Обновление статистики
+        function updateStats() {
+            hungerValue.textContent = Math.round(cat.hunger);
+            energyValue.textContent = Math.round(cat.energy);
+            moodValue.textContent = Math.round(cat.mood);
+            pointsValue.textContent = cat.points;
+            
+            hungerFill.style.width = `${cat.hunger}%`;
+            energyFill.style.width = `${cat.energy}%`;
+            moodFill.style.width = `${cat.mood}%`;
+        }
+
+        // Игровой цикл
+        setInterval(() => {
+            if (!cat.isSleeping) {
+                cat.hunger = Math.max(0, cat.hunger - 0.2);
+                cat.energy = Math.max(0, cat.energy - 0.1);
+                cat.mood = Math.max(0, cat.mood - 0.15);
+                
+                // Пассивный доход очков
+                cat.points += 0.1 * (cat.mood / 100);
+            } else {
+                cat.energy = Math.min(100, cat.energy + 0.3);
+                cat.hunger = Math.max(0, cat.hunger - 0.1);
+            }
+            
+            updateStats();
+        }, 1000);
+
+        // Перемещение котика (заглушка)
+        document.getElementById('apartment').addEventListener('click', (e) => {
+            if (e.target.classList.contains('room')) {
+                const room = e.target.getBoundingClientRect();
+                const gameContainer = document.getElementById('game-container').getBoundingClientRect();
+                
+                cat.position.x = room.left - gameContainer.left + room.width / 2 - 30;
+                cat.position.y = room.top - gameContainer.top + room.height / 2 - 30;
+                
+                catElement.style.left = `${cat.position.x}px`;
+                catElement.style.top = `${cat.position.y}px`;
+            }
+        });
+    </script>
+</body>
+</html>
+
